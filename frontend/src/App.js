@@ -444,29 +444,31 @@ function App() {
 
         {mode === 'webcam' && (
           <div className="webcam-section">
-            <div className="analysis-controls">
-              <h3>Choose Analysis Type:</h3>
-              <div className="analysis-type-selector">
-                <button 
-                  className={`type-button ${analysisType === 'auto' ? 'active' : ''}`}
-                  onClick={() => setAnalysisType('auto')}
-                >
-                  Auto Detect
-                </button>
-                <button 
-                  className={`type-button ${analysisType === 'squat' ? 'active' : ''}`}
-                  onClick={() => setAnalysisType('squat')}
-                >
-                  Squat Analysis
-                </button>
-                <button 
-                  className={`type-button ${analysisType === 'sitting' ? 'active' : ''}`}
-                  onClick={() => setAnalysisType('sitting')}
-                >
-                  Sitting Posture
-                </button>
+            {!sessionReport && (
+              <div className="analysis-controls">
+                <h3>Choose Analysis Type:</h3>
+                <div className="analysis-type-selector">
+                  <button 
+                    className={`type-button ${analysisType === 'auto' ? 'active' : ''}`}
+                    onClick={() => setAnalysisType('auto')}
+                  >
+                    Auto Detect
+                  </button>
+                  <button 
+                    className={`type-button ${analysisType === 'squat' ? 'active' : ''}`}
+                    onClick={() => setAnalysisType('squat')}
+                  >
+                    Squat Analysis
+                  </button>
+                  <button 
+                    className={`type-button ${analysisType === 'sitting' ? 'active' : ''}`}
+                    onClick={() => setAnalysisType('sitting')}
+                  >
+                    Sitting Posture
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
             <div className="video-container">
               <div className="webcam-wrapper">
                 <Webcam
