@@ -204,6 +204,50 @@
   filter: brightness(1.1);
 }
 
+/* Analysis Results Header */
+.analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.analysis-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.close-analysis-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.close-analysis-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.close-analysis-btn:active {
+  transform: scale(0.95);
+}
+
 .score-section {
   margin-bottom: 25px;
 }
@@ -331,7 +375,7 @@
 }
 
 .analysis-controls {
-  margin-bottom: 20px;
+  margin-bottom: 50px;
   background: rgba(255, 255, 255, 0.1);
   padding: 20px;
   border-radius: 10px;

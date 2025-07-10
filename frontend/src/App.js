@@ -667,7 +667,16 @@ function App() {
 
         {analysis && (
           <div className="analysis-results">
-            <h3>Posture Analysis Results</h3>
+            <div className="analysis-header">
+              <h3>Posture Analysis Results</h3>
+              <button 
+                onClick={() => setAnalysis(null)} 
+                className="close-analysis-btn"
+                title="Close Analysis Results"
+              >
+                ✕
+              </button>
+            </div>
             <div className="score-section">
               <div className="posture-score">
                 <span className="score-label">Posture Score:</span>
