@@ -2,6 +2,82 @@
 
 A comprehensive React + Flask application for real-time posture analysis using simulated pose detection. This system provides intelligent posture monitoring with support for webcam recording, video uploads, and real-time feedback for exercises like squats and sitting posture analysis.
 
+## 🎨 Technologies Used
+
+### Frontend
+- **React 19**: Modern frontend framework
+- **react-webcam**: Webcam access and recording
+- **MediaPipe JavaScript**: Client-side pose detection (optional)
+- **CSS3**: Responsive design with animations
+
+### Backend
+- **Flask 3.0**: Python web framework
+- **Mock Analyzer**: Simulated pose detection and analysis
+- **NumPy**: Numerical computations for mock data
+- **Pillow**: Image processing for mock skeleton generation
+- **Flask-CORS**: Cross-origin requests
+
+
+## ▶️ Running the Application
+
+### Local Development
+
+#### 1. Start Backend Server (Terminal 1)
+```powershell
+cd backend
+# Activate virtual environment
+venv\Scripts\activate
+# Start Flask server
+python app.py
+```
+✅ Backend will run on `http://localhost:5000`
+
+#### 2. Start Frontend (Terminal 2)
+```powershell
+cd frontend
+npm start
+```
+✅ Frontend will run on `http://localhost:3000`
+
+#### 3. Access the Application
+Open your browser and navigate to `http://localhost:3000`
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
+```powershell
+git clone https://github.com/your-username/Full-Stack-Rule-Based-Bad-Posture-Detection.git
+cd Full-Stack-Rule-Based-Bad-Posture-Detection
+```
+
+### 2. Backend Setup
+
+#### Windows (Recommended):
+```powershell
+cd backend
+.\setup.bat
+```
+
+#### Manual Setup:
+```powershell
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+#### Linux/Mac:
+```bash
+cd backend
+chmod +x setup.sh
+./setup.sh
+```
+
+### 3. Frontend Setup
+```powershell
+cd frontend
+npm install
+```
 ## 🎯 Features
 
 ### ✅ Real-time Pose Detection
@@ -44,66 +120,7 @@ Frontend (React)              Backend (Flask - Mock Analysis)
 - **Frontend**: React 19, react-webcam, MediaPipe JavaScript (client-side only)
 - **Backend**: Flask 3.0, NumPy, Pillow (no MediaPipe required)
 
-## 🚀 Quick Start
 
-### 1. Clone the Repository
-```powershell
-git clone https://github.com/your-username/Full-Stack-Rule-Based-Bad-Posture-Detection.git
-cd Full-Stack-Rule-Based-Bad-Posture-Detection
-```
-
-### 2. Backend Setup
-
-#### Windows (Recommended):
-```powershell
-cd backend
-.\setup.bat
-```
-
-#### Manual Setup:
-```powershell
-cd backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-#### Linux/Mac:
-```bash
-cd backend
-chmod +x setup.sh
-./setup.sh
-```
-
-### 3. Frontend Setup
-```powershell
-cd frontend
-npm install
-```
-
-## ▶️ Running the Application
-
-### Local Development
-
-#### 1. Start Backend Server (Terminal 1)
-```powershell
-cd backend
-# Activate virtual environment
-venv\Scripts\activate
-# Start Flask server
-python app.py
-```
-✅ Backend will run on `http://localhost:5000`
-
-#### 2. Start Frontend (Terminal 2)
-```powershell
-cd frontend
-npm start
-```
-✅ Frontend will run on `http://localhost:3000`
-
-#### 3. Access the Application
-Open your browser and navigate to `http://localhost:3000`
 
 ## 🎮 How to Use
 
@@ -170,20 +187,6 @@ Full-Stack-Rule-Based-Bad-Posture-Detection/
     └── setup.sh                      # Linux/Mac setup script
 ```
 
-## 🎨 Technologies Used
-
-### Frontend
-- **React 19**: Modern frontend framework
-- **react-webcam**: Webcam access and recording
-- **MediaPipe JavaScript**: Client-side pose detection (optional)
-- **CSS3**: Responsive design with animations
-
-### Backend
-- **Flask 3.0**: Python web framework
-- **Mock Analyzer**: Simulated pose detection and analysis
-- **NumPy**: Numerical computations for mock data
-- **Pillow**: Image processing for mock skeleton generation
-- **Flask-CORS**: Cross-origin requests
 
 ## 📄 Development Commands
 
