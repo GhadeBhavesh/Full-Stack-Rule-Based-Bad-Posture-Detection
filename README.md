@@ -1,18 +1,18 @@
 # Full-Stack Rule-Based Bad Posture Detection System
 
-A comprehensive React + Flask application for real-time posture analysis using MediaPipe Pose detection. This system provides intelligent posture monitoring with support for webcam recording, video uploads, and real-time feedback for exercises like squats and sitting posture analysis.
+A comprehensive React + Flask application for real-time posture analysis using simulated pose detection. This system provides intelligent posture monitoring with support for webcam recording, video uploads, and real-time feedback for exercises like squats and sitting posture analysis.
 
 ## 🎯 Features
 
 ### ✅ Real-time Pose Detection
-- **MediaPipe Integration**: Advanced pose estimation with 33 landmarks
+- **Mock Analysis**: Simulated pose estimation and posture analysis for demonstration
 - **Live Analysis**: Real-time posture feedback during webcam use
-- **Visual Pose Overlay**: Skeleton visualization on video frames
-- **Auto-detection**: Automatically determines squat vs sitting posture
+- **Visual Pose Overlay**: Generated skeleton visualization on video frames
+- **Auto-detection**: Automatically simulates squat vs sitting posture detection
 
 ### ✅ Comprehensive Analysis
-- **Squat Analysis**: Knee over toe detection, back angle measurement, hip depth analysis
-- **Sitting Posture**: Forward head posture, neck bending, slouching detection
+- **Squat Analysis**: Simulated knee over toe detection, back angle measurement, hip depth analysis
+- **Sitting Posture**: Mock forward head posture, neck bending, slouching detection
 - **Severity Levels**: High, Moderate, Low classifications with confidence scores
 - **Real-time Alerts**: Immediate "bad posture detected" notifications
 
@@ -24,11 +24,11 @@ A comprehensive React + Flask application for real-time posture analysis using M
 ## 🏗 System Architecture
 
 ```
-Frontend (React)              Backend (Flask + MediaPipe)
-├── Video Upload              ├── Pose Detection API
-├── Webcam Recording          ├── Rule-based Analysis  
-├── Real-time Display         ├── Frame Processing
-├── Pose Visualization        └── Issue Classification
+Frontend (React)              Backend (Flask - Mock Analysis)
+├── Video Upload              ├── Mock Pose Detection API
+├── Webcam Recording          ├── Simulated Rule-based Analysis  
+├── Real-time Display         ├── Mock Frame Processing
+├── Pose Visualization        └── Simulated Issue Classification
 └── User Interface
 ```
 
@@ -41,8 +41,8 @@ Frontend (React)              Backend (Flask + MediaPipe)
 - **Browser**: Modern web browser with webcam support
 
 ### Dependencies
-- **Frontend**: React 19, react-webcam, MediaPipe JavaScript
-- **Backend**: Flask 3.0, MediaPipe 0.10.8, OpenCV 4.8, NumPy
+- **Frontend**: React 19, react-webcam, MediaPipe JavaScript (client-side only)
+- **Backend**: Flask 3.0, NumPy, Pillow (no MediaPipe required)
 
 ## 🚀 Quick Start
 
@@ -162,6 +162,21 @@ The `render.yaml` file automatically configures:
 1. **Build Failures**: Check Render logs for dependency issues
 2. **API Connection**: Verify `REACT_APP_API_BASE_URL` environment variable
 3. **Performance**: Free tier has limitations (spin-down after inactivity)
+4. **Backend Dependencies**: Ensure no MediaPipe in requirements.txt
+5. **Port Configuration**: Backend automatically uses PORT environment variable
+
+#### Important Deployment Notes
+
+⚠️ **MediaPipe Compatibility**: 
+- **Backend**: Does NOT use MediaPipe (uses mock analyzer)
+- **Frontend**: Can optionally use MediaPipe JavaScript (client-side)
+- **Render**: This configuration works with Render's free tier
+
+✅ **Deployment-Ready Features**:
+- Lightweight Python backend (only Flask, NumPy, Pillow)
+- No GPU requirements
+- Cross-platform compatibility
+- Professional UI with mock data demonstration
 
 ### Local vs Deployed Environment
 
@@ -244,7 +259,7 @@ Full-Stack-Rule-Based-Bad-Posture-Detection/
 ```http
 GET /api/health
 ```
-Returns server status and MediaPipe initialization.
+Returns server status and mock analyzer initialization.
 
 ### Real-time Frame Analysis
 ```http
@@ -267,10 +282,12 @@ Content-Type: application/json
       "type": "knee_over_toe",
       "severity": "high",
       "confidence": 0.85,
-      "description": "Left knee extends beyond toes"
+      "description": "Left knee extends beyond toes",
+      "recommendation": "Focus on sitting back into the squat"
     }
   ],
-  "pose_overlay": "base64_encoded_image_with_skeleton"
+  "pose_overlay": "base64_encoded_mock_skeleton",
+  "posture_score": 75
 }
 ```
 
@@ -279,14 +296,14 @@ Content-Type: application/json
 ### Frontend
 - **React 19**: Modern frontend framework
 - **react-webcam**: Webcam access and recording
-- **MediaPipe JavaScript**: Client-side pose detection
+- **MediaPipe JavaScript**: Client-side pose detection (optional)
 - **CSS3**: Responsive design with animations
 
 ### Backend
 - **Flask 3.0**: Python web framework
-- **MediaPipe 0.10.8**: Google's pose detection
-- **OpenCV 4.8**: Computer vision processing
-- **NumPy**: Numerical computations
+- **Mock Analyzer**: Simulated pose detection and analysis
+- **NumPy**: Numerical computations for mock data
+- **Pillow**: Image processing for mock skeleton generation
 - **Flask-CORS**: Cross-origin requests
 
 ## 🚧 Troubleshooting
@@ -294,21 +311,16 @@ Content-Type: application/json
 ### Common Issues
 
 #### Backend Issues
-1. **MediaPipe Installation Error**:
-   ```powershell
-   pip install mediapipe==0.10.8
-   ```
-
-2. **OpenCV Import Error**:
-   ```powershell
-   pip install opencv-python-headless
-   ```
-
-3. **Port 5000 Already in Use**:
+1. **Port 5000 Already in Use**:
    ```powershell
    # Kill process using port 5000
    netstat -ano | findstr :5000
    taskkill /PID <process_id> /F
+   ```
+
+2. **Python Dependencies**:
+   ```powershell
+   pip install flask flask-cors numpy pillow gunicorn
    ```
 
 #### Frontend Issues
@@ -347,6 +359,7 @@ npm start
 ## 🔮 Future Enhancements
 
 ### Advanced Features
+- **Real MediaPipe Integration**: Add actual pose detection when deployed with GPU support
 - **3D Pose Analysis**: Depth-based assessment
 - **Custom Training**: User-specific posture models
 - **Progress Tracking**: Long-term improvement monitoring
@@ -373,6 +386,74 @@ npm test            # Run tests
 python app.py       # Start Flask server
 pip freeze > requirements.txt  # Update dependencies
 ```
+
+## 🔄 Architecture Notes
+
+### Mock Backend vs Production
+This project currently uses a **mock backend** that simulates pose detection without requiring MediaPipe. This approach:
+
+✅ **Advantages:**
+- **Easy Deployment**: Works on any platform (including Render free tier)
+- **No GPU Required**: Runs on basic servers
+- **Fast Setup**: No complex computer vision dependencies
+- **Demo Ready**: Perfect for showcasing UI and workflow
+
+🎯 **For Production Use:**
+- Replace mock analyzer with actual MediaPipe implementation
+- Add GPU support for real-time processing
+- Implement proper computer vision algorithms
+- Add model training capabilities
+
+### Client-Side MediaPipe Option
+For real pose detection, consider using **MediaPipe JavaScript** directly in the browser:
+- Runs entirely client-side
+- No server-side MediaPipe required
+- Works with Render deployment
+- Utilizes user's device processing power
+
+## 🤖 Mock vs Real Implementation
+
+### Current Implementation (Mock Backend)
+This project currently uses a **demonstration backend** with the following characteristics:
+
+**Mock Posture Analyzer Features:**
+- ✅ Simulates pose landmarks (33 points like MediaPipe)
+- ✅ Generates realistic posture issues with confidence scores
+- ✅ Creates mock skeleton overlays
+- ✅ Supports all analysis types (squat, sitting, auto-detect)
+- ✅ Professional UI with realistic data
+- ✅ Works on any deployment platform (including Render free tier)
+
+**Backend Dependencies (Lightweight):**
+```
+flask==3.0.0
+flask-cors==4.0.0
+numpy==1.24.3
+Pillow==10.1.0
+gunicorn==21.2.0
+```
+
+### Upgrading to Real Pose Detection
+
+**Option 1: Client-Side MediaPipe (Recommended for Web)**
+- Use MediaPipe JavaScript directly in the browser
+- No server-side dependencies
+- Works with current deployment setup
+- Utilizes user's device processing power
+
+**Option 2: Server-Side MediaPipe (Requires GPU Server)**
+- Replace MockPostureAnalyzer with real MediaPipe implementation
+- Requires deployment platform with GPU support
+- Higher computational requirements
+- More accurate pose detection
+
+### Why Mock Implementation?
+
+1. **Deployment Compatibility**: Works on any hosting platform
+2. **No GPU Requirements**: Runs on basic server instances
+3. **Fast Development**: Focus on UI/UX without complex CV setup
+4. **Cost Effective**: Compatible with free hosting tiers
+5. **Demo Ready**: Perfect for showcasing application workflow
 
 ## 📜 License
 
