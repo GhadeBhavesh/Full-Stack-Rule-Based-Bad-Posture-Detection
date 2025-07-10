@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: flask-backend
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: gunicorn app:app
+    workingDir: backend
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: FLASK_ENV
+        value: production
+
+  - type: web
+    name: react-frontend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npx serve -s build
+    workingDir: frontend
+    envVars:
+      - key: REACT_APP_API_BASE_URL
+        value: https://flask-backend.onrender.com

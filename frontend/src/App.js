@@ -4,6 +4,9 @@ import PostureAnalyzer from './components/PostureAnalyzer';
 import EnhancedPostureVisualizer from './components/EnhancedPostureVisualizer';
 import './App.css';
 
+// API Configuration - Dynamic URL for deployment
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+
 function App() {
   const [mode, setMode] = useState('select');
   const [isRecording, setIsRecording] = useState(false);
@@ -98,7 +101,7 @@ function App() {
         }],
         overall: 'Analysis failed due to connection issues.',
         score: 0,
-        recommendations: ['Check that the backend server is running on http://localhost:5000']
+        recommendations: ['Check that the backend server is running on the configured API endpoint']
       });
       setIsAnalyzing(false);
     }
@@ -141,7 +144,7 @@ function App() {
         
         try {
           // Send frame to backend
-          const response = await fetch('http://localhost:5000/api/analyze-frame', {
+          const response = await fetch(`${API_BASE_URL}/api/analyze-frame`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -189,7 +192,7 @@ function App() {
       throw new Error('Could not capture webcam frame');
     }
     
-    const response = await fetch('http://localhost:5000/api/analyze-frame', {
+    const response = await fetch(`${API_BASE_URL}/api/analyze-frame`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

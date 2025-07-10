@@ -1,5 +1,8 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react';
 
+// API Configuration - Dynamic URL for deployment
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+
 const RealTimePoseAnalyzer = ({ webcamRef, isAnalyzing, onAnalysisUpdate, analysisType = 'auto' }) => {
   const [currentIssues, setCurrentIssues] = useState([]);
   const [poseOverlay, setPoseOverlay] = useState(null);
@@ -14,7 +17,7 @@ const RealTimePoseAnalyzer = ({ webcamRef, isAnalyzing, onAnalysisUpdate, analys
       if (!imageSrc) return;
 
       // Send frame to backend for analysis
-      const response = await fetch('http://localhost:5000/api/analyze-frame', {
+      const response = await fetch(`${API_BASE_URL}/api/analyze-frame`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

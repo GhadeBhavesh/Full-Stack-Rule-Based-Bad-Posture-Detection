@@ -83,7 +83,9 @@ npm install
 
 ## ▶️ Running the Application
 
-### 1. Start Backend Server (Terminal 1)
+### Local Development
+
+#### 1. Start Backend Server (Terminal 1)
 ```powershell
 cd backend
 # Activate virtual environment
@@ -93,15 +95,83 @@ python app.py
 ```
 ✅ Backend will run on `http://localhost:5000`
 
-### 2. Start Frontend (Terminal 2)
+#### 2. Start Frontend (Terminal 2)
 ```powershell
 cd frontend
 npm start
 ```
 ✅ Frontend will run on `http://localhost:3000`
 
-### 3. Access the Application
+#### 3. Access the Application
 Open your browser and navigate to `http://localhost:3000`
+
+### 🚀 Deploy to Render
+
+This project is configured for easy deployment to Render using the included `render.yaml` configuration.
+
+#### Prerequisites for Deployment
+- GitHub repository with your code
+- Render account (free tier available)
+
+#### Deployment Steps
+
+1. **Push to GitHub**:
+   ```powershell
+   git add .
+   git commit -m "Ready for Render deployment"
+   git push origin main
+   ```
+
+2. **Connect to Render**:
+   - Go to [Render Dashboard](https://dashboard.render.com/)
+   - Click "New" → "Blueprint"
+   - Connect your GitHub repository
+   - Render will automatically detect the `render.yaml` file
+
+3. **Automatic Deployment**:
+   - Render will create two services:
+     - `flask-backend`: Python backend on `https://flask-backend.onrender.com`
+     - `react-frontend`: React frontend on `https://react-frontend.onrender.com`
+
+4. **Update Frontend Environment Variables** (if needed):
+   - In Render dashboard, go to your frontend service
+   - Add environment variable: `REACT_APP_API_BASE_URL=https://your-backend-url.onrender.com`
+
+5. **Access Your Deployed App**:
+   - Frontend: `https://react-frontend.onrender.com`
+   - Backend API: `https://flask-backend.onrender.com/api/health`
+
+#### Render Configuration Details
+
+The `render.yaml` file automatically configures:
+
+**Backend Service:**
+- Python environment with gunicorn server
+- Automatic dependency installation
+- Port 10000 (Render's requirement)
+- Production environment variables
+
+**Frontend Service:**
+- Node.js environment
+- Build process with `npm run build`
+- Static file serving with `serve`
+- Dynamic API URL configuration
+
+#### Deployment Troubleshooting
+
+1. **Build Failures**: Check Render logs for dependency issues
+2. **API Connection**: Verify `REACT_APP_API_BASE_URL` environment variable
+3. **Performance**: Free tier has limitations (spin-down after inactivity)
+
+### Local vs Deployed Environment
+
+| Feature | Local Development | Render Deployment |
+|---------|-------------------|-------------------|
+| Backend URL | `http://localhost:5000` | `https://flask-backend.onrender.com` |
+| Frontend URL | `http://localhost:3000` | `https://react-frontend.onrender.com` |
+| Configuration | Manual setup | Automatic via `render.yaml` |
+| HTTPS | Not required | Automatically enabled |
+| Environment | Development | Production |
 
 ## 🎮 How to Use
 
@@ -147,21 +217,23 @@ Open your browser and navigate to `http://localhost:3000`
 
 ```
 Full-Stack-Rule-Based-Bad-Posture-Detection/
-├── README.md                          # This file
+├── README.md                          # This comprehensive guide
 ├── .gitignore                         # Git ignore rules
+├── .env.example                       # Environment variables template
+├── render.yaml                        # Render deployment configuration
 ├── frontend/                          # React frontend
-│   ├── package.json                   # Node dependencies
+│   ├── package.json                   # Node dependencies (includes serve)
 │   ├── public/                        # Static assets
 │   └── src/                          # React source code
-│       ├── App.js                     # Main application
+│       ├── App.js                     # Main application (dynamic API URLs)
 │       ├── App.css                    # Styling
 │       └── components/               # React components
 │           ├── PostureAnalyzer.js     # Analysis component
 │           ├── RealTimePoseAnalyzer.js # Real-time detection
 │           └── EnhancedPostureVisualizer.js # Visualization
 └── backend/                          # Flask backend
-    ├── app.py                        # Flask server
-    ├── requirements.txt              # Python dependencies
+    ├── app.py                        # Flask server (production ready)
+    ├── requirements.txt              # Python dependencies (includes gunicorn)
     ├── setup.bat                     # Windows setup script
     └── setup.sh                      # Linux/Mac setup script
 ```
