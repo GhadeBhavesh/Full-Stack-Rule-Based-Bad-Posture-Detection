@@ -428,19 +428,47 @@ function App() {
               <p>{analysis.overall}</p>
             </div>
             <div className="issues-section">
-              <h4>Issues Detected:</h4>
+              <div className="issues-header">
+                <h4>📋 Analysis Report</h4>
+                <span className="issues-count">{analysis.issues.length} Issue{analysis.issues.length !== 1 ? 's' : ''} Detected</span>
+              </div>
               <div className="issues-list">
                 {analysis.issues.map((issue, index) => (
-                  <div key={index} className={`issue-item ${issue.type} ${issue.severity}`}>
-                    <div className="issue-header">
-                      <span className="issue-type">{issue.type.replace('_', ' ')}</span>
-                      <span className={`severity-badge ${issue.severity}`}>{issue.severity}</span>
+                  <div key={index} className={`issue-card ${issue.severity}`}>
+                    <div className="issue-main">
+                      <div className="issue-left">
+                        <div className="severity-indicator">
+                          <span className={`severity-dot ${issue.severity}`}></span>
+                          <span className={`severity-label ${issue.severity}`}>{issue.severity}</span>
+                        </div>
+                        <div className="issue-content">
+                          <h5 className="issue-title">{issue.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h5>
+                          <p className="issue-description">{issue.description}</p>
+                        </div>
+                      </div>
+                      <div className="issue-right">
+                        <div className="confidence-meter">
+                          <div className="confidence-label">Confidence</div>
+                          <div className="confidence-value">{Math.round(issue.confidence * 100)}%</div>
+                          <div className="confidence-bar">
+                            <div 
+                              className="confidence-fill" 
+                              style={{width: `${issue.confidence * 100}%`}}
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="timestamp-badge">
+                          <span className="timestamp-icon">⏱️</span>
+                          <span className="timestamp-text">{issue.timestamp}</span>
+                        </div>
+                      </div>
                     </div>
-                    <p className="issue-description">{issue.description}</p>
-                    <div className="issue-meta">
-                      <span className="confidence">Confidence: {Math.round(issue.confidence * 100)}%</span>
-                      <span className="timestamp">Time: {issue.timestamp}</span>
-                    </div>
+                    {issue.recommendation && (
+                      <div className="issue-recommendation">
+                        <span className="recommendation-icon">💡</span>
+                        <span className="recommendation-text">{issue.recommendation}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

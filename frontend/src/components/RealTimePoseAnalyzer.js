@@ -93,13 +93,27 @@ const RealTimePoseAnalyzer = ({ webcamRef, isAnalyzing, onAnalysisUpdate, analys
       {isAnalyzing && currentIssues.length > 0 && (
         <div className="real-time-issues">
           <div className="alert-banner">
-            <h4>⚠️ Posture Issues Detected</h4>
-            {currentIssues.map((issue, index) => (
-              <div key={index} className={`real-time-issue ${issue.severity}`}>
-                <span className="issue-type">{issue.type.replace('_', ' ')}</span>
-                <span className="issue-description">{issue.description}</span>
-              </div>
-            ))}
+            <div className="banner-header">
+              <h4>🔍 Live Analysis</h4>
+              <span className="issues-count-live">{currentIssues.length} Active Issue{currentIssues.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="live-issues-grid">
+              {currentIssues.map((issue, index) => (
+                <div key={index} className={`live-issue-card ${issue.severity}`}>
+                  <div className="live-issue-header">
+                    <span className={`severity-dot-small ${issue.severity}`}></span>
+                    <span className="live-issue-type">{issue.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                    <span className={`severity-badge-small ${issue.severity}`}>{issue.severity}</span>
+                  </div>
+                  <p className="live-issue-description">{issue.description}</p>
+                  {issue.confidence && (
+                    <div className="live-confidence">
+                      <span className="live-confidence-text">{Math.round(issue.confidence * 100)}% confidence</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
