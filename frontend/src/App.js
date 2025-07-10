@@ -15,13 +15,15 @@ function App() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [realTimeAnalysis, setRealTimeAnalysis] = useState(false);
   const [analysisType, setAnalysisType] = useState('auto');
+  const [realTimeData, setRealTimeData] = useState([]);
+  const [sessionReport, setSessionReport] = useState(null);
   const webcamRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const [recordedChunks, setRecordedChunks] = useState([]);
 
   const videoConstraints = {
-    width: 1280,
-    height: 720,
+    width: 640,
+    height: 480,
     facingMode: "user"
   };
 
@@ -284,7 +286,129 @@ function App() {
   };
 
   const toggleRealtimeAnalysis = () => {
+    if (realTimeAnalysis) {
+      // Stopping analysis - generate session report
+      generateSessionReport();
+    } else {
+      // Starting analysis - clear previous data
+      setRealTimeData([]);
+      setSessionReport(null);
+    }
     setRealTimeAnalysis(!realTimeAnalysis);
+  };
+
+  const generateSessionReport = () => {
+    if (realTimeData.length === 0) {
+      setSessionReport({
+        duration: 0,
+        totalFrames: 0,
+        issuesDetected: 0,
+        summary: 'No analysis data available',
+        issues: [],
+        detailedIssues: []
+      });
+      return;
+    }
+
+    const totalFrames = realTimeData.length;
+    const allIssues = realTimeData.flatMap(frame => frame.issues || []);
+    const uniqueIssueTypes = [...new Set(allIssues.map(issue => issue.type))];
+    
+    // Calculate issue frequency and get detailed issue info
+    const issueStats = {};
+    const detailedIssues = [];
+    
+    allIssues.forEach((issue, index) => {
+      issueStats[issue.type] = issueStats[issue.type] || { 
+        count: 0, 
+        severities: [], 
+        recommendations: new Set(),
+        descriptions: new Set(),
+        avgConfidence: []
+      };
+      issueStats[issue.type].count++;
+      issueStats[issue.type].severities.push(issue.severity);
+      issueStats[issue.type].avgConfidence.push(issue.confidence || 0.8);
+      
+      if (issue.recommendation) {
+        issueStats[issue.type].recommendations.add(issue.recommendation);
+      }
+      if (issue.description) {
+        issueStats[issue.type].descriptions.add(issue.description);
+      }
+
+      // Add to detailed issues (limit to most recent occurrences)
+      if (detailedIssues.length < 10) {
+        detailedIssues.push({
+          ...issue,
+          frameIndex: index,
+          timeOccurred: new Date(Date.now() - (totalFrames - index) * 500).toLocaleTimeString()
+        });
+      }
+    });
+
+    // Calculate average posture score
+    const avgScore = realTimeData.reduce((sum, frame) => sum + (frame.posture_score || 100), 0) / totalFrames;
+
+    const report = {
+      duration: totalFrames * 0.5, // Assuming ~2 FPS analysis
+      totalFrames,
+      issuesDetected: allIssues.length,
+      averageScore: Math.round(avgScore),
+      uniqueIssueTypes: uniqueIssueTypes.length,
+      detailedIssues: detailedIssues,
+      issueBreakdown: Object.entries(issueStats).map(([type, stats]) => ({
+        type: type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        originalType: type,
+        count: stats.count,
+        frequency: Math.round((stats.count / totalFrames) * 100),
+        avgConfidence: Math.round((stats.avgConfidence.reduce((a, b) => a + b, 0) / stats.avgConfidence.length) * 100),
+        mostCommonSeverity: stats.severities.sort((a,b) => 
+          stats.severities.filter(v => v===a).length - stats.severities.filter(v => v===b).length
+        ).pop(),
+        recommendations: Array.from(stats.recommendations),
+        descriptions: Array.from(stats.descriptions)
+      })),
+      summary: generateSummaryText(avgScore, allIssues.length, totalFrames),
+      recommendations: generateRecommendations(issueStats)
+    };
+
+    setSessionReport(report);
+  };
+
+  const generateSummaryText = (avgScore, totalIssues, totalFrames) => {
+    if (avgScore >= 85) {
+      return `Excellent session! You maintained good posture throughout most of the analysis.`;
+    } else if (avgScore >= 70) {
+      return `Good session with room for improvement. ${totalIssues} issues detected across ${totalFrames} frames.`;
+    } else if (avgScore >= 50) {
+      return `Several posture issues detected. Focus on the recommendations to improve your form.`;
+    } else {
+      return `Multiple posture concerns identified. Consider taking breaks and reviewing your posture frequently.`;
+    }
+  };
+
+  const generateRecommendations = (issueStats) => {
+    const recommendations = [];
+    
+    if (issueStats.knee_over_toe) {
+      recommendations.push("Focus on keeping knees aligned over your ankles during squats");
+    }
+    if (issueStats.forward_head_posture) {
+      recommendations.push("Pull your head back and align ears over shoulders");
+    }
+    if (issueStats.slouching) {
+      recommendations.push("Sit up straight with shoulders back and engage your core");
+    }
+    if (issueStats.back_angle) {
+      recommendations.push("Maintain a neutral spine and keep your chest up");
+    }
+    
+    if (recommendations.length === 0) {
+      recommendations.push("Continue maintaining good posture awareness");
+    }
+    
+    return recommendations;
   };
 
   return (
@@ -344,19 +468,29 @@ function App() {
               </div>
             </div>
             <div className="video-container">
-              <div style={{ position: 'relative' }}>
+              <div className="webcam-wrapper">
                 <Webcam
-                  height={720}
+                  height={480}
+                  width={640}
                   ref={webcamRef}
                   screenshotFormat="image/jpeg"
-                  width={1280}
                   videoConstraints={videoConstraints}
-                  audio={true}
+                  audio={false}
+                  className="webcam-video"
+                  style={{
+                    width: '640px',
+                    height: '480px',
+                    maxWidth: '640px',
+                    maxHeight: '480px'
+                  }}
                 />
                 <EnhancedPostureVisualizer
                   webcamRef={webcamRef}
                   isAnalyzing={realTimeAnalysis}
                   analysisType={analysisType}
+                  onAnalysisUpdate={(data) => {
+                    setRealTimeData(prev => [...prev, { ...data, timestamp: Date.now() }]);
+                  }}
                 />
               </div>
             </div>
@@ -388,6 +522,124 @@ function App() {
                 ← Back
               </button>
             </div>
+
+            {/* Session Report Display */}
+            {sessionReport && (
+              <div className="session-report">
+                <div className="report-header">
+                  <h3>📊 Real-Time Analysis Report</h3>
+                  <button 
+                    onClick={() => setSessionReport(null)} 
+                    className="close-report-btn"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <div className="report-stats">
+                  <div className="stat-card">
+                    <div className="stat-number">{Math.round(sessionReport.duration)}s</div>
+                    <div className="stat-label">Duration</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-number">{sessionReport.totalFrames}</div>
+                    <div className="stat-label">Frames Analyzed</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-number">{sessionReport.issuesDetected}</div>
+                    <div className="stat-label">Issues Detected</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className={`stat-number ${sessionReport.averageScore >= 80 ? 'good' : sessionReport.averageScore >= 60 ? 'moderate' : 'poor'}`}>
+                      {sessionReport.averageScore}
+                    </div>
+                    <div className="stat-label">Average Score</div>
+                  </div>
+                </div>
+
+                <div className="report-summary">
+                  <h4>Summary</h4>
+                  <p>{sessionReport.summary}</p>
+                </div>
+
+                {sessionReport.issueBreakdown.length > 0 && (
+                  <div className="issue-breakdown">
+                    <h4>Issue Breakdown</h4>
+                    <div className="breakdown-list">
+                      {sessionReport.issueBreakdown.map((issue, index) => (
+                        <div key={index} className={`breakdown-item ${issue.mostCommonSeverity}`}>
+                          <div className="breakdown-header">
+                            <span className="issue-name">{issue.type}</span>
+                            <span className="issue-frequency">{issue.frequency}% of frames</span>
+                          </div>
+                          <div className="breakdown-details">
+                            <span className="issue-count">{issue.count} occurrences</span>
+                            <span className={`severity-tag ${issue.mostCommonSeverity}`}>
+                              {issue.mostCommonSeverity}
+                            </span>
+                            <span className="confidence-tag">
+                              {issue.avgConfidence}% avg confidence
+                            </span>
+                          </div>
+                          {issue.descriptions && issue.descriptions.length > 0 && (
+                            <div className="issue-description-list">
+                              {issue.descriptions.map((desc, i) => (
+                                <p key={i} className="issue-desc">{desc}</p>
+                              ))}
+                            </div>
+                          )}
+                          {issue.recommendations && issue.recommendations.length > 0 && (
+                            <div className="breakdown-recommendations">
+                              {issue.recommendations.map((rec, i) => (
+                                <div key={i} className="breakdown-rec">
+                                  <span className="rec-icon">💡</span>
+                                  <span className="rec-text">{rec}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {sessionReport.detailedIssues && sessionReport.detailedIssues.length > 0 && (
+                  <div className="detailed-issues-section">
+                    <h4>Recent Issue Detections</h4>
+                    <div className="detailed-issues-list">
+                      {sessionReport.detailedIssues.slice(0, 5).map((issue, index) => (
+                        <div key={index} className={`detailed-issue ${issue.severity}`}>
+                          <div className="detailed-issue-header">
+                            <span className={`severity-dot ${issue.severity}`}></span>
+                            <span className="detailed-issue-type">
+                              {issue.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </span>
+                            <span className="issue-time">{issue.timeOccurred}</span>
+                          </div>
+                          <p className="detailed-issue-desc">{issue.description}</p>
+                          {issue.recommendation && (
+                            <div className="detailed-issue-rec">
+                              <span className="rec-icon">💡</span>
+                              <span>{issue.recommendation}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="report-recommendations">
+                  <h4>Recommendations</h4>
+                  <ul>
+                    {sessionReport.recommendations.map((rec, index) => (
+                      <li key={index}>{rec}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

@@ -3,7 +3,7 @@ import React, { useRef, useCallback, useState, useEffect } from 'react';
 // API Configuration - Dynamic URL for deployment
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
-const EnhancedPostureVisualizer = ({ webcamRef, isAnalyzing, analysisType = 'auto' }) => {
+const EnhancedPostureVisualizer = ({ webcamRef, isAnalyzing, analysisType = 'auto', onAnalysisUpdate }) => {
   const [currentAnalysis, setCurrentAnalysis] = useState(null);
   const [poseOverlay, setPoseOverlay] = useState(null);
   const [analysisHistory, setAnalysisHistory] = useState([]);
@@ -42,6 +42,11 @@ const EnhancedPostureVisualizer = ({ webcamRef, isAnalyzing, analysisType = 'aut
         // Update current analysis
         setCurrentAnalysis(result);
 
+        // Pass data back to parent component for session tracking
+        if (onAnalysisUpdate) {
+          onAnalysisUpdate(result);
+        }
+
         // Add to history (keep last 10 analyses)
         setAnalysisHistory(prev => {
           const newHistory = [result, ...prev.slice(0, 9)];
@@ -55,7 +60,7 @@ const EnhancedPostureVisualizer = ({ webcamRef, isAnalyzing, analysisType = 'aut
       console.error('Error analyzing frame:', error);
       setIsConnected(false);
     }
-  }, [webcamRef, isAnalyzing, analysisType]);
+  }, [webcamRef, isAnalyzing, analysisType, onAnalysisUpdate]);
 
   useEffect(() => {
     if (isAnalyzing) {

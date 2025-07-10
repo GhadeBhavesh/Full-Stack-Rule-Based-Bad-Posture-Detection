@@ -94,7 +94,7 @@ const RealTimePoseAnalyzer = ({ webcamRef, isAnalyzing, onAnalysisUpdate, analys
         <div className="real-time-issues">
           <div className="alert-banner">
             <div className="banner-header">
-              <h4>🔍 Live Analysis</h4>
+              <h4>⚠️ Posture Issues Detected</h4>
               <span className="issues-count-live">{currentIssues.length} Active Issue{currentIssues.length !== 1 ? 's' : ''}</span>
             </div>
             <div className="live-issues-grid">
@@ -106,6 +106,12 @@ const RealTimePoseAnalyzer = ({ webcamRef, isAnalyzing, onAnalysisUpdate, analys
                     <span className={`severity-badge-small ${issue.severity}`}>{issue.severity}</span>
                   </div>
                   <p className="live-issue-description">{issue.description}</p>
+                  {issue.recommendation && (
+                    <div className="live-recommendation">
+                      <span className="rec-icon">💡</span>
+                      <span className="rec-text">{issue.recommendation}</span>
+                    </div>
+                  )}
                   {issue.confidence && (
                     <div className="live-confidence">
                       <span className="live-confidence-text">{Math.round(issue.confidence * 100)}% confidence</span>
@@ -113,6 +119,9 @@ const RealTimePoseAnalyzer = ({ webcamRef, isAnalyzing, onAnalysisUpdate, analys
                   )}
                 </div>
               ))}
+            </div>
+            <div className="banner-footer">
+              <span className="correction-hint">Fix these issues to improve your posture score!</span>
             </div>
           </div>
         </div>
