@@ -18,30 +18,6 @@ A comprehensive React + Flask application for real-time posture analysis using s
 - **Flask-CORS**: Cross-origin requests
 
 
-## ▶️ Running the Application
-
-### Local Development
-
-#### 1. Start Backend Server (Terminal 1)
-```powershell
-cd backend
-# Activate virtual environment
-venv\Scripts\activate
-# Start Flask server
-python app.py
-```
-✅ Backend will run on `http://localhost:5000`
-
-#### 2. Start Frontend (Terminal 2)
-```powershell
-cd frontend
-npm start
-```
-✅ Frontend will run on `http://localhost:3000`
-
-#### 3. Access the Application
-Open your browser and navigate to `http://localhost:3000`
-
 ## 🚀 Quick Start
 
 ### 1. Clone the Repository
