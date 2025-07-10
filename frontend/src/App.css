@@ -812,6 +812,26 @@
   margin-top: 1px;
 }
 
+/* Minimal Report Notice */
+.minimal-report-notice {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(52, 152, 219, 0.1);
+  border-left: 3px solid #3498db;
+  border-radius: 6px;
+}
+
+.minimal-report-notice p {
+  margin: 0;
+  font-size: 13px;
+  color: #2c3e50;
+  line-height: 1.4;
+}
+
+.minimal-report-notice strong {
+  color: #3498db;
+}
+
 /* Mobile responsiveness for real-time issues */
 @media (max-width: 768px) {
   .real-time-issues {

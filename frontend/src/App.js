@@ -287,8 +287,15 @@ function App() {
 
   const toggleRealtimeAnalysis = () => {
     if (realTimeAnalysis) {
-      // Stopping analysis - generate session report
-      generateSessionReport();
+      // Stopping analysis - generate session report only if we have meaningful data
+      if (realTimeData.length > 3) { // Require at least 3 frames of data
+        generateSessionReport();
+      } else {
+        // Show a brief message instead of empty report
+        alert('Not enough data collected. Please run the analysis for at least 2-3 seconds to generate a meaningful report.');
+        setRealTimeData([]);
+        setSessionReport(null);
+      }
     } else {
       // Starting analysis - clear previous data
       setRealTimeData([]);
@@ -299,13 +306,24 @@ function App() {
 
   const generateSessionReport = () => {
     if (realTimeData.length === 0) {
+      // Don't show report for completely empty data
+      setSessionReport(null);
+      return;
+    }
+
+    if (realTimeData.length < 3) {
+      // Show minimal report for insufficient data
       setSessionReport({
-        duration: 0,
-        totalFrames: 0,
+        duration: realTimeData.length * 0.5,
+        totalFrames: realTimeData.length,
         issuesDetected: 0,
-        summary: 'No analysis data available',
-        issues: [],
-        detailedIssues: []
+        averageScore: 100,
+        uniqueIssueTypes: 0,
+        detailedIssues: [],
+        issueBreakdown: [],
+        summary: 'Insufficient data collected. Please run the analysis for at least 2-3 seconds for meaningful results.',
+        recommendations: ['Run the analysis for a longer duration to get detailed insights'],
+        isMinimalReport: true
       });
       return;
     }
@@ -370,7 +388,8 @@ function App() {
         descriptions: Array.from(stats.descriptions)
       })),
       summary: generateSummaryText(avgScore, allIssues.length, totalFrames),
-      recommendations: generateRecommendations(issueStats)
+      recommendations: generateRecommendations(issueStats),
+      isMinimalReport: false
     };
 
     setSessionReport(report);
@@ -562,9 +581,14 @@ function App() {
                 <div className="report-summary">
                   <h4>Summary</h4>
                   <p>{sessionReport.summary}</p>
+                  {sessionReport.isMinimalReport && (
+                    <div className="minimal-report-notice">
+                      <p>💡 <strong>Tip:</strong> For more detailed analysis, run the real-time analysis for at least 3-5 seconds to collect sufficient data.</p>
+                    </div>
+                  )}
                 </div>
 
-                {sessionReport.issueBreakdown.length > 0 && (
+                {!sessionReport.isMinimalReport && sessionReport.issueBreakdown.length > 0 && (
                   <div className="issue-breakdown">
                     <h4>Issue Breakdown</h4>
                     <div className="breakdown-list">
@@ -606,7 +630,7 @@ function App() {
                   </div>
                 )}
 
-                {sessionReport.detailedIssues && sessionReport.detailedIssues.length > 0 && (
+                {!sessionReport.isMinimalReport && sessionReport.detailedIssues && sessionReport.detailedIssues.length > 0 && (
                   <div className="detailed-issues-section">
                     <h4>Recent Issue Detections</h4>
                     <div className="detailed-issues-list">
